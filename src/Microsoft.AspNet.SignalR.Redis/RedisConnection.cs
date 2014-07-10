@@ -48,7 +48,7 @@ namespace Microsoft.AspNet.SignalR.Redis
                 var message = RedisMessage.FromBytes(data, _trace);
                 onMessage(0, message);
 
-                //save the latest message.Id
+                // Save the last message id in just in case redis shuts down
                 _latestMessageId = message.Id;
             });
         }
@@ -79,19 +79,26 @@ namespace Microsoft.AspNet.SignalR.Redis
 
         public async Task RestoreLatestValueForKey(int database, string key)
         {
-            var redisResult = await _connection.GetDatabase(database).ScriptEvaluateAsync(
-               @"local newvalue = redis.call('GET', KEYS[1])
+            try
+            {
+                var redisResult = await _connection.GetDatabase(database).ScriptEvaluateAsync(
+                   @"local newvalue = redis.call('GET', KEYS[1])
                     if newvalue < ARGV[1] then
-                        return redis.call('SET',KEYS[1], ARGV[1])
+                        return redis.call('SET', KEYS[1], ARGV[1])
                     else
                         return nil
                     end",
-               new RedisKey[] { key },
-               new RedisValue[] { _latestMessageId });
+                   new RedisKey[] { key },
+                   new RedisValue[] { _latestMessageId });
 
-            if (!redisResult.IsNull)
+                if (!redisResult.IsNull)
+                {
+                    _trace.TraceInformation("Restored Redis Key {0} to the latest Value {1} ", key, _latestMessageId);
+                }
+            }
+            catch (Exception ex)
             {
-                _trace.TraceInformation("Restored Redis Key {0} to the latest Value {1} ", key, _latestMessageId);
+                _trace.TraceError("Error while restoring Redis Key to the latest Value: " + ex);
             }
         }
 
