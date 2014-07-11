@@ -8,12 +8,14 @@
 
     <div class="page-header">
         <h2>Connection API <small>Low-level connection abstraction</small></h2>
-        <p>Demonstrates all features of the lower-level connection API including starting and stopping, sending and
-           receiving messages, and managing groups.</p>
+        <p>
+            Demonstrates all features of the lower-level connection API including starting and stopping, sending and
+           receiving messages, and managing groups.
+        </p>
     </div>
 
     <a href="crossdomain.htm">Cross Domain</a>
-    
+
     <h4>To Everybody</h4>
     <form class="form-inline">
         <div class="input-append">
@@ -25,7 +27,7 @@
             <input type="button" id="leave-group" class="btn" value="Leave Group" />
         </div>
     </form>
-    
+
     <h4>To Me</h4>
     <form class="form-inline">
         <div class="input-append">
@@ -39,13 +41,13 @@
         <div class="input-prepend input-append">
             <input type="text" name="message" id="message" placeholder="Type a message" />
             <input type="text" name="user" id="user" placeholder="Type a user or group name" />
-        
+
             <input type="button" id="privatemsg" class="btn" value="Send to user" />
             <input type="button" id="groupmsg" class="btn" value="Send to group" />
         </div>
     </form>
 
-    <button id="stopStart" class="btn btn-info btn-small" disabled="disabled"><i class="icon-stop icon-white"></i> <span>Stop Connection</span></button>
+    <button id="stopStart" class="btn btn-info btn-small" disabled="disabled"><i class="icon-stop icon-white"></i><span>Stop Connection</span></button>
 
     <h4>Messages</h4>
     <ul id="messages">
@@ -60,7 +62,7 @@
 
             var connection = $.connection("../raw-connection");
             connection.logging = true;
-
+            
             connection.received(function (data) {
                 $("<li/>").html(window.JSON.stringify(data)).appendTo($("#messages"));
                 if (data.type == 2) {
